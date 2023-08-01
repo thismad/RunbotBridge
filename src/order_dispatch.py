@@ -1,4 +1,5 @@
 import json
+import os
 import time
 import requests
 
@@ -6,6 +7,8 @@ import src.consts as c
 
 import aiohttp
 import logging
+
+from objects import Message, CliMessage, WebhookMessage
 
 logger = logging.getLogger(__name__)
 
@@ -218,4 +221,17 @@ class Client():
         while True:
             # Pop first item or wait indifinitely
             message = r.blpop('communication', 0)[1]
+            message = Message.deserialize_message(message)
+            # if isinstance(message, WebhookMessage):
+            #     # TODO pass orders
+            # elif isinstance(message, CliMessage):
+            #     # TODO pause stop all processes?
+            # else:
+            #     logger.error(f"Unknown message type {message}")
+
             # TODO : check messages and pass orders
+
+if __name__ == '__main__':
+    client = Client(os.getenv('API_KEY'), os.getenv('API_SECRET'), os.getenv('PASSPHRASE'))
+    logger.info("Starting order dispatcher")
+    client.start()
