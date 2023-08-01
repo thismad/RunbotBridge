@@ -2,11 +2,12 @@ import queue
 import argparse
 import threading
 from enum import Enum
-from src.cli import cli_process, CliMessage
+from src.cli import cli_process
+from src.objects import WebhookMessage, CliMessage
 
-from objects import MessageType
-
-
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def main():
