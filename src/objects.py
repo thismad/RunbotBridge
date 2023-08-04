@@ -45,3 +45,6 @@ class CliMessage(Message):
 
     def serialize_message(self):
         return json.dumps({'type': 'CliMessage', 'command': self.command.value, 'content': self.content})
+
+    def __repr__(self):
+        return f"CliMessage({self.command}, {self.content})"

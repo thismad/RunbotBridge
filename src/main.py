@@ -1,9 +1,7 @@
 import queue
-import argparse
 import threading
-from enum import Enum
-from src.cli import cli_process
-from src.objects import WebhookMessage, CliMessage
+from .cli_process import cli_process
+from .objects import WebhookMessage, CliMessage
 
 import logging
 logging.basicConfig(level=logging.INFO)
