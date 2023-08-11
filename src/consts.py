@@ -1,4 +1,3 @@
-
 # http header
 CONTENT_TYPE = 'Content-Type'
 ACCESS_KEY = 'ACCESS-KEY'
@@ -23,8 +22,6 @@ API_URL = 'https://api.bitget.com'
 # ws Url
 CONTRACT_WS_URL = 'wss://ws.bitget.com/mix/v1/stream'
 
-
-
 # ########################################
 # ##############【spot url】###############
 # ########################################
@@ -47,7 +44,6 @@ MIX_ORDER_V1_URL = '/api/mix/v1/order'
 MIX_PLAN_V1_URL = '/api/mix/v1/plan'
 MIX_TRACE_V1_URL = '/api/mix/v1/trace'
 
-
 BROKER_ACCOUNT_V1_URL = '/api/broker/v1/account'
 BROKER_MANAGE_V1_URL = '/api/broker/v1/manage'
 
@@ -57,4 +53,4 @@ LOGIN = 'login'
 
 REQUEST_PATH = '/user/verify'
 
-SERVER_TIMESTAMP_URL='/api/spot/v1/public/time'
+SERVER_TIMESTAMP_URL = '/api/spot/v1/public/time'

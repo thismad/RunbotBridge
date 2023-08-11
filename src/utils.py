@@ -1,6 +1,8 @@
-import hmac
 import base64
+import hmac
+import json
 import time
+
 from . import consts as c
 
 
@@ -30,8 +32,47 @@ def parse_params_to_str(params):
     url = '?'
     for key, value in params.items():
         url = url + str(key) + '=' + str(value) + '&'
-
     return url[0:-1]
+
+
+def insert_order_redis(r, key, value):
+    """
+    Append an order to the list of orders for a position id AKA a strategy id
+    :param r: redis.Redis : Redis connection object
+    :param key: str : key to set
+    :param value: str : value to set
+    :return:
+    """
+    orders = r.get(key)
+    # If strategy id exists, append order to the list
+    if orders:
+        orders = json.loads(orders)
+        orders.append(value)
+        r.set(key, json.dumps(orders))
+    # If strategy id does not exist, create a new list and add the new order
+    else:
+        orders = [value]
+        r.set(key, json.dumps(orders))
+
+
+def remove_orders_redis(r, key, values: list):
+    """
+    Remove an order from the list of orders for a position id AKA a strategy id
+    :param r: redis.Redis : Redis connection object
+    :param key: str : key
+    :param value: list : values to remove
+    :return:
+    """
+    orders = r.get(key)
+    # If strategy id exists, remove order from the list
+    if orders:
+        orders = json.loads(orders)
+        for value in values:
+            orders.remove(value)
+        r.set(key, json.dumps(orders))
+    # If strategy id does not exist, do nothing
+    else:
+        pass
 
 
 def get_timestamp():

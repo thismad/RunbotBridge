@@ -1,9 +1,10 @@
+import logging
 import queue
 import threading
+
 from .cli_process import cli_process
 from .objects import WebhookMessage, CliMessage
 
-import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -23,6 +24,3 @@ def main():
         elif isinstance(next_message, CliMessage):
             print("Cli message :", next_message.content)
             q.task_done()
-
-
-

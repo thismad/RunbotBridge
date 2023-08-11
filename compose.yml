@@ -1,0 +1,31 @@
+services:
+  webhook_listener:
+    build:
+      context: .
+      dockerfile: Dockerfile.webhook_listener
+    ports:
+      - "5001:5000"
+    depends_on:
+      - redis
+
+  order_dispatcher:
+    build:
+      context: .
+      dockerfile: Dockerfile.order_dispatcher
+    depends_on:
+      - redis
+
+  cli:
+    build:
+      context: .
+      dockerfile: Dockerfile.cli_process
+    stdin_open: true
+    tty: true
+
+    depends_on:
+      - redis
+
+
+  redis:
+    image: "redis:latest"
+

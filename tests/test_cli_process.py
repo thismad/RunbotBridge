@@ -1,23 +1,28 @@
-import json
-from queue import Queue
-import threading
-import unittest
-import os
-from unittest.mock import patch, MagicMock
+from unittest import TestCase
+from unittest.mock import patch, Mock
+
 from src.cli_process import cli_process
-from src.objects import CliMessage
+from src.objects import CliMessage, Message
 
-class TestCli(unittest.TestCase):
+
+class TestCli(TestCase):
     @patch('builtins.input', side_effect=['pause', 'resume', 'exit'])
-    @patch.object(Queue, 'put')
-    def test_cli_process(self, mock_put, mock_input):
-        q = Queue()
+    @patch('redis.Redis')
+    def test_cli_process(self, mock_redis, mock_input):
+        # Create a mock Redis instance
+        mock_r = Mock()
+        mock_redis.return_value = mock_r
+
+        # Run the cli_process function
         cli_process()
-        # check the call args of the mock_put
-        calls = [call[0][0] for call in mock_put.call_args_list]
-        commands = [call.command for call in calls]
 
-        self.assertListEqual(commands,
-                             [CliMessage.CliCommand.PAUSE, CliMessage.CliCommand.RESUME, CliMessage.CliCommand.EXIT])
+        # Check the calls to the mock Redis publish method (or whatever method you're using)
+        # This example assumes you are using a method named publish
+        calls = [Message.deserialize_message(call[0][1]) for call in mock_r.rpush.call_args_list]
+        print(calls)
 
-
+        # Validate the calls were as expected
+        self.assertListEqual(calls,
+                             [CliMessage(CliMessage.CliCommand.PAUSE),
+                              CliMessage(CliMessage.CliCommand.RESUME),
+                              CliMessage(CliMessage.CliCommand.EXIT)])

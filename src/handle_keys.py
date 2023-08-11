@@ -3,6 +3,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class ApiKey:
     def __init__(self, api_key, api_secret_key, passphrase, pseudo):
         self.api_key = api_key

@@ -1,4 +1,3 @@
-
 class BitgetAPIException(Exception):
 
     def __init__(self, response):
@@ -22,7 +21,6 @@ class BitgetAPIException(Exception):
         return 'API Request Error(code=%s): %s' % (self.code, self.message)
 
 
-
 class BitgetRequestException(Exception):
 
     def __init__(self, message):
@@ -30,7 +28,6 @@ class BitgetRequestException(Exception):
 
     def __str__(self):
         return 'BitgetRequestException: %s' % self.message
-
 
 
 class BitgetParamsException(Exception):
