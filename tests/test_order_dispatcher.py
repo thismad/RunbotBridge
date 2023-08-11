@@ -188,7 +188,7 @@ class MockTestOrderDispatch(unittest.TestCase):
         r_mock.rpush(webhook_open_long.serialize_message())
 
         bitget_client = BitgetClient(os.getenv('API_KEY'), os.getenv('API_SECRET'), os.getenv('PASSPHRASE'))
-        bitget_client.order_logic(r_mock, webhook_open_long, running=True, activated_pairs=activated_pairs)
+        bitget_client.order_logic(r_mock, webhook_open_long, activated_pairs=activated_pairs)
 
         # We are expecting an order to be placed and the order id to be returned
         mock_place_orders.assert_called_with('BTCUSDT_UMCBL', 'USDT', self.size, 'open_long', 'market')
@@ -222,7 +222,7 @@ class MockTestOrderDispatch(unittest.TestCase):
         r_mock.rpush(webhook_open_long.serialize_message())
 
         bitget_client = BitgetClient(os.getenv('API_KEY'), os.getenv('API_SECRET'), os.getenv('PASSPHRASE'))
-        bitget_client.order_logic(r_mock, webhook_open_long, running=True, activated_pairs=activated_pairs)
+        bitget_client.order_logic(r_mock, webhook_open_long, activated_pairs=activated_pairs)
 
         # We are expecting an order to be placed and the order id to be returned
         mock_place_orders.assert_called_with('BTCUSDT_UMCBL', 'USDT', self.size, 'open_short', 'market')
@@ -259,7 +259,7 @@ class MockTestOrderDispatch(unittest.TestCase):
         })
         r_mock.rpush(webhook_open_long.serialize_message())
 
-        bitget_client.order_logic(r_mock, webhook_open_long, running=True, activated_pairs=activated_pairs)
+        bitget_client.order_logic(r_mock, webhook_open_long, activated_pairs=activated_pairs)
 
         # Place second long thus increasing position
         order_id_2 = "14193209139"
@@ -281,7 +281,7 @@ class MockTestOrderDispatch(unittest.TestCase):
             "leverage": "0.86736"
         })
         r_mock.rpush(webhook_open_long.serialize_message())
-        bitget_client.order_logic(r_mock, webhook_open_long, running=True, activated_pairs=activated_pairs)
+        bitget_client.order_logic(r_mock, webhook_open_long, activated_pairs=activated_pairs)
         mock_place_orders.assert_called_with('BTCUSDT_UMCBL', 'USDT', self.size, 'open_long', 'market')
 
         assert json.loads(r_mock.get('1')) == [order_id, order_id_2]
@@ -317,7 +317,7 @@ class MockTestOrderDispatch(unittest.TestCase):
         })
         r_mock.rpush(webhook_open_long.serialize_message())
 
-        bitget_client.order_logic(r_mock, webhook_open_long, running=True, activated_pairs=activated_pairs)
+        bitget_client.order_logic(r_mock, webhook_open_long, activated_pairs=activated_pairs)
 
         # Place second long thus increasing position
         order_id_2 = "14193209139"
@@ -339,7 +339,7 @@ class MockTestOrderDispatch(unittest.TestCase):
             "leverage": "0.86736"
         })
         r_mock.rpush(webhook_open_long.serialize_message())
-        bitget_client.order_logic(r_mock, webhook_open_long, running=True, activated_pairs=activated_pairs)
+        bitget_client.order_logic(r_mock, webhook_open_long,activated_pairs=activated_pairs)
         mock_place_orders.assert_called_with('BTCUSDT_UMCBL', 'USDT', self.size, 'open_short', 'market')
 
         assert json.loads(r_mock.get('1')) == [order_id, order_id_2]
@@ -375,7 +375,7 @@ class MockTestOrderDispatch(unittest.TestCase):
         })
         r_mock.rpush(webhook_open_long.serialize_message())
 
-        bitget_client.order_logic(r_mock, webhook_open_long, running=True, activated_pairs=activated_pairs)
+        bitget_client.order_logic(r_mock, webhook_open_long,  activated_pairs=activated_pairs)
         mock_place_orders.assert_called_with('BTCUSDT_UMCBL', 'USDT', self.size, 'open_long', 'market')
         assert json.loads(r_mock.get('1')) == [order_id]
 
@@ -410,7 +410,7 @@ class MockTestOrderDispatch(unittest.TestCase):
         })
         r_mock.rpush(webhook_open_long.serialize_message())
 
-        bitget_client.order_logic(r_mock, webhook_open_long, running=True, activated_pairs=activated_pairs)
+        bitget_client.order_logic(r_mock, webhook_open_long,activated_pairs=activated_pairs)
         mock_place_orders.assert_called_with('BTCUSDT_UMCBL', 'USDT', self.size, 'open_short', 'market')
         assert json.loads(r_mock.get('1')) == [order_id]
 
@@ -449,6 +449,6 @@ class MockTestOrderDispatch(unittest.TestCase):
         r_mock.rpush(webhook_open_long.serialize_message())
 
         # Call order logic
-        bitget_client.order_logic(r_mock, webhook_open_long, running=True, activated_pairs=activated_pairs)
+        bitget_client.order_logic(r_mock, webhook_open_long, activated_pairs=activated_pairs)
         mock_close_pos.assert_called_with('BTCUSDT_UMCBL', [order_id, order_id_2])
         assert json.loads(r_mock.get('1')) == []

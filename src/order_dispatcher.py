@@ -332,11 +332,17 @@ class BitgetClient():
                         insert_order_redis(r, position_id, order_id)
                 elif position_type == 'close':
                     logger.info("Received close order, passing order")
-                    orders_id = json.loads(r.get(position_id))
-                    success = self.close_positions_copy_trading(symbol, orders_id)
-                    if success:
-                        # Remove all closed orders from redis
-                        remove_orders_redis(r, position_id, orders_id)
+                    # Try to get orders id from redis, possibility that there is no orders id if we have a close order and bot didnt receive an open order before
+                    try:
+                        orders_id = json.loads(r.get(position_id))
+                        # If there are no corresponding order id, it means that the bot didnt open any trade anyway
+                    except TypeError:
+                        pass
+                    else:
+                        success = self.close_positions_copy_trading(symbol, orders_id)
+                        if success:
+                            # Remove all closed orders from redis
+                            remove_orders_redis(r, position_id, orders_id)
             else:
                 logger.info(f"Received order for {symbol} but not activated, not passing order")
 
