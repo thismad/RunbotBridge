@@ -26,6 +26,7 @@ executing
 fastjsonschema 
 Flask==2.3.2
 frozenlist 
+gunicorn==21.2.0
 idna 
 ipykernel 
 ipython 
@@ -66,12 +67,12 @@ platformdirs
 ply==3.11
 prometheus-client 
 prompt-toolkit 
-ptyprocess
+ptyprocess 
 pure-eval 
 pycparser 
 Pygments 
 pyOpenSSL 
-pyrsistent
+pyrsistent 
 PySocks 
 python-dateutil 
 python-dotenv==1.0.0
@@ -82,7 +83,7 @@ QtPy
 redis==4.6.0
 requests 
 Send2Trash 
-six
+six 
 sniffio 
 soupsieve 
 stack-data 
