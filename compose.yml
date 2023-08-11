@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile.webhook_listener
     ports:
-      - "5001:5000"
+      - "8000:8000"
     depends_on:
       - redis
 
