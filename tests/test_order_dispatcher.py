@@ -339,7 +339,7 @@ class MockTestOrderDispatch(unittest.TestCase):
             "leverage": "0.86736"
         })
         r_mock.rpush(webhook_open_long.serialize_message())
-        bitget_client.order_logic(r_mock, webhook_open_long,activated_pairs=activated_pairs)
+        bitget_client.order_logic(r_mock, webhook_open_long, activated_pairs=activated_pairs)
         mock_place_orders.assert_called_with('BTCUSDT_UMCBL', 'USDT', self.size, 'open_short', 'market')
 
         assert json.loads(r_mock.get('1')) == [order_id, order_id_2]
@@ -375,7 +375,7 @@ class MockTestOrderDispatch(unittest.TestCase):
         })
         r_mock.rpush(webhook_open_long.serialize_message())
 
-        bitget_client.order_logic(r_mock, webhook_open_long,  activated_pairs=activated_pairs)
+        bitget_client.order_logic(r_mock, webhook_open_long, activated_pairs=activated_pairs)
         mock_place_orders.assert_called_with('BTCUSDT_UMCBL', 'USDT', self.size, 'open_long', 'market')
         assert json.loads(r_mock.get('1')) == [order_id]
 
@@ -410,7 +410,7 @@ class MockTestOrderDispatch(unittest.TestCase):
         })
         r_mock.rpush(webhook_open_long.serialize_message())
 
-        bitget_client.order_logic(r_mock, webhook_open_long,activated_pairs=activated_pairs)
+        bitget_client.order_logic(r_mock, webhook_open_long, activated_pairs=activated_pairs)
         mock_place_orders.assert_called_with('BTCUSDT_UMCBL', 'USDT', self.size, 'open_short', 'market')
         assert json.loads(r_mock.get('1')) == [order_id]
 

@@ -3,17 +3,16 @@ import logging
 import os
 import time
 
+import redis
 import requests
 from dotenv import load_dotenv
 
 from . import consts as c
-from .objects import CliMessage, WebhookMessage, Message
-from .utils import insert_order_redis, remove_orders_redis
 from . import utils, exceptions
-import redis
+from .objects import CliMessage, Message
+from .utils import insert_order_redis, remove_orders_redis
 
 load_dotenv()
-
 
 log_format = "%(asctime)s - %(levelname)s - %(message)s"
 logging.basicConfig(level=logging.DEBUG, format=log_format)
@@ -300,62 +299,52 @@ class BitgetClient():
         :return:
         """
 
-        if isinstance(message, WebhookMessage):
-            symbol = message.content['market']
+        symbol = message.content['market']
 
-            if symbol in activated_pairs:
-                position_id = message.content['positionId']
-                position_type = message.content['positionType']
-                symbol = self.BITGET_PAIRS[symbol]
-                margin_coin = 'USDT'
-                size = message.content['size']
-                side = message.content['tradeDirection']
-                side = self.BITGET_ORDERS[side]
-                order_type = 'market'
+        if symbol in activated_pairs:
+            position_id = message.content['positionId']
+            position_type = message.content['positionType']
+            symbol = self.BITGET_PAIRS[symbol]
+            margin_coin = 'USDT'
+            size = message.content['size']
+            side = message.content['tradeDirection']
+            side = self.BITGET_ORDERS[side]
+            order_type = 'market'
 
-                if position_type == 'open' or position_type == 'increase':
-                    logger.info(f"Received {message.content['positionType']} order, passing order")
-                    order = self.place_orders(symbol, margin_coin, size, side, order_type)
-                    if order:
-                        order_id = order['orderId']
-                        insert_order_redis(r, position_id, order_id)
+            if position_type == 'open' or position_type == 'increase':
+                logger.info(f"Received {message.content['positionType']} order, passing order")
+                order = self.place_orders(symbol, margin_coin, size, side, order_type)
+                if order:
+                    order_id = order['orderId']
+                    insert_order_redis(r, position_id, order_id)
 
-                elif position_type == 'decrease':
-                    logger.info("Received decrease order, passing order")
-                    # Inverse side for decrease order
-                    side = self.BITGET_ORDERS['long'] if side == self.BITGET_ORDERS['short'] else \
-                        self.BITGET_ORDERS[
-                            'short']
-                    order = self.place_orders(symbol, margin_coin, size, side, order_type)
-                    if order:
-                        order_id = order['orderId']
-                        insert_order_redis(r, position_id, order_id)
-                elif position_type == 'close':
-                    logger.info("Received close order, passing order")
-                    # Try to get orders id from redis, possibility that there is no orders id if we have a close order and bot didnt receive an open order before
-                    try:
-                        orders_id = json.loads(r.get(position_id))
-                        # If there are no corresponding order id, it means that the bot didnt open any trade anyway
-                    except TypeError:
-                        pass
-                    else:
-                        success = self.close_positions_copy_trading(symbol, orders_id)
-                        if success:
-                            # Remove all closed orders from redis
-                            remove_orders_redis(r, position_id, orders_id)
-            else:
-                logger.info(f"Received order for {symbol} but not activated, not passing order")
+            elif position_type == 'decrease':
+                logger.info("Received decrease order, passing order")
+                # Inverse side for decrease order
+                side = self.BITGET_ORDERS['long'] if side == self.BITGET_ORDERS['short'] else \
+                    self.BITGET_ORDERS[
+                        'short']
+                order = self.place_orders(symbol, margin_coin, size, side, order_type)
+                if order:
+                    order_id = order['orderId']
+                    insert_order_redis(r, position_id, order_id)
+            elif position_type == 'close':
+                logger.info("Received close order, passing order")
+                # Try to get orders id from redis, possibility that there is no orders id if we have a close order and bot didnt receive an open order before
+                try:
+                    orders_id = json.loads(r.get(position_id))
+                    # If there are no corresponding order id, it means that the bot didnt open any trade anyway
+                except TypeError:
+                    pass
+                else:
+                    success = self.close_positions_copy_trading(symbol, orders_id)
+                    if success:
+                        # Remove all closed orders from redis
+                        remove_orders_redis(r, position_id, orders_id)
+        else:
+            logger.info(f"Received order for {symbol} but not activated, not passing order")
 
-            pass
-        #     # TODO pass orders
-
-
-            # TODO is paused if resumed if restart
-        #     # TODO pause stop all processes?
-        # else:
-        #     logger.error(f"Unknown message type {message}")
-
-        # TODO : check messages and pass orders
+        pass
 
 
 if __name__ == '__main__':
