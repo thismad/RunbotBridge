@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.webhook_listener
+    restart: always
     ports:
       - "8000:8000"
     depends_on:
@@ -12,6 +13,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.order_dispatcher
+    restart: always
     depends_on:
       - redis
 
@@ -19,6 +21,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.cli_process
+    restart: always
     stdin_open: true
     tty: true
 
