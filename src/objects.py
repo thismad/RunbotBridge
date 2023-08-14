@@ -22,6 +22,9 @@ class WebhookMessage(Message):
     def serialize_message(self):
         return json.dumps({'type': 'WebhookMessage', 'content': self.content})
 
+    def __repr__(self):
+        return f"CliMessage({self.content}])"
+
 
 class CliMessage(Message):
     class CliCommand(Enum):
