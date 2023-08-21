@@ -20,6 +20,9 @@ logger = logging.getLogger(__name__)
 
 
 class BitgetClient():
+    """
+    Client for the Bitget API
+    """
     BITGET_PAIRS = {
         "BTCUSDT": "BTCUSDT_UMCBL",
         "ETHUSDT": "ETHUSDT_UMCBL"
@@ -36,6 +39,11 @@ class BitgetClient():
 
     @staticmethod
     def _retry(func):
+        """
+        Decorator for retrying API calls (Bitget custom)
+        :param func:
+        :return:
+        """
         def wrapper(*args, **kwargs):
             for i in range(2):
                 try:
@@ -70,13 +78,15 @@ class BitgetClient():
         return wrapper
 
     @_retry
-    def _request(self, method, request_path, params=None, cursor=False):
+    def _request(self, method:str, request_path:str, params=None, cursor=False):
         """
-        :param method:
-        :param request_path:
-        :param params:
-        :param cursor:
-        :return: JSON : Successful response JSON
+        Make a request to the Bitget API
+        :param method: str : HTTP method (POST - GET)
+        :param request_path: str : Request path
+        :param params: dict : Request parameters (uri params or json depending of HTTP method)
+        :param cursor: bool : If the request is paginated
+        :return: dict : Successful response JSON
+        Success response
         {
           "code":"00000",
           "data":{
@@ -97,6 +107,7 @@ class BitgetClient():
         """
         if method == c.GET:
             request_path = request_path + utils.parse_params_to_str(params)
+
         # url
         url = c.API_URL + request_path
 
@@ -258,7 +269,7 @@ class BitgetClient():
     def start(self):
         """
         Start the order dispatcher
-        :return: None
+        :return:
         """
         # Read settings
         with open('settings.json') as f:

@@ -7,7 +7,7 @@ ACCESS_PASSPHRASE = 'ACCESS-PASSPHRASE'
 APPLICATION_JSON = 'application/json'
 
 # header key
-ACEEPT = 'Accept'
+ACCEPT = 'Accept'
 COOKIE = 'Cookie'
 LOCALE = 'locale='
 

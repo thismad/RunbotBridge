@@ -4,8 +4,16 @@ from enum import Enum
 
 
 class Message(ABC):
+    """
+    Abstract class for messages between processes
+    """
     @staticmethod
     def deserialize_message(json_string: str):
+        """
+        Deserialize a message from a JSON string
+        :param json_string:
+        :return:
+        """
         message = json.loads(json_string)
         if message['type'] == 'CliMessage':
             command = message['command'].upper()
@@ -15,11 +23,18 @@ class Message(ABC):
 
 
 class WebhookMessage(Message):
+    """
+    Message sent by the webhook listener
+    """
     def __init__(self, content):
         super().__init__()
         self.content = content
 
     def serialize_message(self):
+        """
+        Serialize the message to a JSON string
+        :return:
+        """
         return json.dumps({'type': 'WebhookMessage', 'content': self.content})
 
     def __repr__(self):
@@ -27,6 +42,9 @@ class WebhookMessage(Message):
 
 
 class CliMessage(Message):
+    """
+    Message sent by the CLI process
+    """
     class CliCommand(Enum):
         PAUSE = 'PAUSE'
         RESUME = 'RESUME'
@@ -37,6 +55,10 @@ class CliMessage(Message):
         self.command = cli_command
 
     def serialize_message(self):
+        """
+        Serialize the message to a JSON string
+        :return:
+        """
         return json.dumps({'type': 'CliMessage', 'command': self.command.value})
 
     def __eq__(self, other):

@@ -11,6 +11,10 @@ logger = logging.getLogger(__name__)
 
 
 def cli_process():
+    """
+    CLI process to pause/resume the bridge, exiting all positions if stopped
+    :return:
+    """
     r = redis.Redis(host='redis')
     parser = argparse.ArgumentParser(description='Key CLI manager for the bridge')
 
