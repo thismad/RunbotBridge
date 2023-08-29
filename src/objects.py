@@ -38,7 +38,7 @@ class WebhookMessage(Message):
         return json.dumps({'type': 'WebhookMessage', 'content': self.content})
 
     def __repr__(self):
-        return f"CliMessage({self.content}])"
+        return f"WebhookMessage({self.content}])"
 
 
 class CliMessage(Message):

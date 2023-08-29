@@ -452,3 +452,5 @@ class MockTestOrderDispatch(unittest.TestCase):
         bitget_client.order_logic(r_mock, webhook_open_long, activated_pairs=activated_pairs)
         mock_close_pos.assert_called_with('BTCUSDT_UMCBL', [order_id, order_id_2])
         assert json.loads(r_mock.get('1')) == []
+
+    # TODO : Test to open position if script is paused
