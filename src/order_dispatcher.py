@@ -226,6 +226,7 @@ class BitgetClient():
         params['productType'] = product_type
         params['pageNo'] = 1
         params['pageSize'] = 50
+        #TODO Might have to iterate on it if we have nore than 50 pos
         resp = self._request(c.GET, c.MIX_TRACE_V1_URL + '/currentTrack', params)
         if resp:
             # List of all open positions
@@ -255,7 +256,7 @@ class BitgetClient():
                                 logger.error(f"Failed to close position {order_id}")
                                 return False
 
-            # Close all positions if no orders list is provided
+            # Close all positions for symbol if no orders list is provided
             else:
                 for pos in resp['data']:
                     result = self._request(c.POST, c.MIX_TRACE_V1_URL + '/closeTrackOrder',
@@ -292,10 +293,17 @@ class BitgetClient():
                     running = False
                     logger.info("Pausing order dispatcher")
                 elif message.command == CliMessage.CliCommand.EXIT:
+                    success = False
                     for pair in activated_pairs:
-                        self.close_positions_copy_trading(self.BITGET_PAIRS[pair])
-                    running = False
-                    logger.info("Exiting order dispatcher")
+                        success = self.close_positions_copy_trading(self.BITGET_PAIRS[pair])
+                    if success:
+                        running = False
+                        # Clear redis database from all the orders
+                        r.flushdb()
+                        logger.info("All positions closed, exiting order dispatcher")
+                    else:
+                        logger.error("Failed to close all positions, not exiting order dispatcher")
+
             else:
                 if running:
                     self.order_logic(r, message, activated_pairs)

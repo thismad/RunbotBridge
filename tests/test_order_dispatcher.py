@@ -479,5 +479,5 @@ class MockTestOrderDispatch(unittest.TestCase):
         mock_send_discord_webhook_embed.assert_called_with(os.getenv('TBF_WEBHOOK_URL_STAGING'), '28911.90', 'BTCUSDT', 'short', 'open', 1611192000000)
 
 
-    # TODO : Test if discord message is sent (Mock it)
     # TODO : Test to open position if script is paused
+    # TODO : Test to close position if script is exited (looks like there is an error in close positions...)
