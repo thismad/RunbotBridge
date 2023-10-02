@@ -12,4 +12,7 @@ run pip install -r requirements.txt
 
 COPY src/ ./src
 
-CMD ["python", "-m", "src.cli_process"]
+ENV PYTHONPATH /app/src:$PYTHONPATH
+ENV ENV staging
+
+CMD ["python", "src/cli_process.py"]

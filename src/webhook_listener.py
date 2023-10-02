@@ -1,16 +1,26 @@
 import logging
-
+from dotenv import load_dotenv
 import redis
 from flask import Flask, request
-
+import os
 from src.objects import WebhookMessage
 
+load_dotenv()
 log_format = "%(asctime)s - %(levelname)s - %(message)s"
 logging.basicConfig(level=logging.DEBUG, format=log_format)
 logger = logging.getLogger(__name__)
 
+if os.getenv('ENV') == 'staging':
+    logger.info("Starting webhook listener in staging mode")
+    r = redis.Redis(host=os.getenv('REDIS_HOST_STAGING'))
+elif os.getenv('ENV') == 'production':
+    logger.info("Starting webhook listener in production mode")
+    r = redis.Redis(host=os.getenv('REDIS_HOST_PRODUCTION'))
+else:
+    logger.error("Please set ENV to production or staging, aborting order dispatcher")
+    exit(1)
+
 app = Flask(__name__)
-r = redis.Redis(host='redis')
 
 
 @app.route('/runbot', methods=['POST'])
@@ -24,5 +34,4 @@ def receive_webhook():
 
 
 if __name__ == '__main__':
-    logger.info("Starting webhook listener")
     app.run(host='0.0.0.0', port=5000, debug=True)

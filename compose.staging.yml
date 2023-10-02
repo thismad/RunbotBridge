@@ -1,0 +1,34 @@
+services:
+  webhook_listener:
+    build:
+      context: .
+      dockerfile: Dockerfiles/Dockerfile.webhook_listener.staging
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+
+  order_dispatcher:
+    build:
+      context: .
+      dockerfile: Dockerfiles/Dockerfile.order_dispatcher.staging
+    restart: always
+    depends_on:
+      - redis
+
+  cli:
+    build:
+      context: .
+      dockerfile: Dockerfiles/Dockerfile.cli_process.staging
+    restart: always
+    stdin_open: true
+    tty: true
+
+    depends_on:
+      - redis
+
+
+  redis:
+    image: "redis:latest"
+

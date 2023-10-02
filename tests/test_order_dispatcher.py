@@ -17,12 +17,13 @@ logger = logging.getLogger(__name__)
 class RealTestOrderDispatch(unittest.TestCase):
     """
     This class tests the order dispatcher with a real Bitget client and real orders.
+    NO ORDERS MUST BE OPEN ON THE ACCOUNT. STAGING KEYS NOT WORKING YE< MUST ASK FOR TRADERS RIGHTS.
     """
 
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
-        cls.client = BitgetClient(os.getenv('API_KEY'), os.getenv('API_SECRET'), os.getenv('PASSPHRASE'))
+        cls.client = BitgetClient(os.getenv('API_KEY_STAGING'), os.getenv('API_SECRET_STAGING'), os.getenv('PASSPHRASE_STAGING'))
         # Size of 0.01 $BTC
         cls.size = 0.01
 
@@ -453,4 +454,30 @@ class MockTestOrderDispatch(unittest.TestCase):
         mock_close_pos.assert_called_with('BTCUSDT_UMCBL', [order_id, order_id_2])
         assert json.loads(r_mock.get('1')) == []
 
+    @patch('src.order_dispatcher.send_discord_webhook_embed')
+    @patch('redis.Redis', autospec=True)
+    @patch('src.order_dispatcher.BitgetClient.place_orders')
+    @patch('src.order_dispatcher.utils.insert_order_redis')
+    def test_discord_webhook_message_sent(self, mock_insert_redis, mock_place_orders, redis_mock, mock_send_discord_webhook_embed):
+        bitget_client = BitgetClient(os.getenv('API_KEY_STAGING'), os.getenv('API_SECRET_STAGING'), os.getenv('PASSPHRASE_STAGING'))
+        activated_pairs = ['BTCUSDT', 'ETHUSDT']
+        mock_place_orders.return_value = {'orderId':1}
+        mock_insert_redis.return_value = None
+        webhook_open_long = WebhookMessage({
+            "exchange": "Binance",
+            "market": "BTCUSDT",
+            "t": 1611192000000,
+            "positionType": "open",
+            "positionId": "1",
+            "orderType": "market",
+            "tradeDirection": "short",
+            "price": "28911.90",
+            "size": self.size,
+            "leverage": "0.86736"
+        })
+        bitget_client.order_logic(redis_mock, webhook_open_long, activated_pairs=activated_pairs)
+        mock_send_discord_webhook_embed.assert_called_with(os.getenv('TBF_WEBHOOK_URL_STAGING'), '28911.90', 'BTCUSDT', 'short', 'open', 1611192000000)
+
+
+    # TODO : Test if discord message is sent (Mock it)
     # TODO : Test to open position if script is paused

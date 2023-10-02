@@ -14,7 +14,7 @@ class TestCli(TestCase):
         mock_redis.return_value = mock_r
 
         # Run the cli_process function
-        cli_process()
+        cli_process(mock_r)
 
         # Check the calls to the mock Redis publish method (or whatever method you're using)
         # This example assumes you are using a method named publish

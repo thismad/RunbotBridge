@@ -54,3 +54,12 @@ LOGIN = 'login'
 REQUEST_PATH = '/user/verify'
 
 SERVER_TIMESTAMP_URL = '/api/spot/v1/public/time'
+
+
+# ########################################
+# ##############【colors】###########
+# ########################################
+
+RED = 16705372
+YELLOW = 16705372
+GREEN = 3066993

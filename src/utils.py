@@ -3,7 +3,7 @@ import hmac
 import json
 import time
 
-from . import consts as c
+import consts as c
 
 
 def sign(message, secret_key):
