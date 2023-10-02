@@ -5,7 +5,7 @@ Bridge Bitget x Runbot
 ## Usage
 
 Check the correct branch is used (main for production or staging for development).
-```bash
+```bashgit 
 docker-compose build --no-cache #If updated code
 docker-compose up -d
 ```
