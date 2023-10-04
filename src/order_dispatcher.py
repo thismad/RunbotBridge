@@ -359,6 +359,6 @@ class BitgetClient():
 
 
 if __name__ == '__main__':
-    client = BitgetClient(os.getenv('API_KEY'), os.getenv('API_SECRET'), os.getenv('PASSPHRASE'))
+    client = BitgetClient(os.getenv('API_KEY_PRODUCTION'), os.getenv('API_SECRET_PRODUCTION'), os.getenv('PASSPHRASE_PRODUCTION'))
     logger.info("Starting order dispatcher")
     client.start()
