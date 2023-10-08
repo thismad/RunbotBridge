@@ -15,6 +15,7 @@ def send_discord_webhook_embed(url, price: str, market: str, trade_direction: st
     :return:
     """
     color = GREEN if trade_direction == "long" else RED
+    trade_direction = "long" if trade_direction == "short" else "short" if position_type == "close" else trade_direction
     trade_embed = {"embeds": [{
         "color": color,
         "author": {
@@ -38,7 +39,7 @@ def send_discord_webhook_embed(url, price: str, market: str, trade_direction: st
             },
             {
                 "name": "Price",
-                "value": f"{price}",
+                "value": f"{price:.1f}",
                 "inline": True
             }
         ],
