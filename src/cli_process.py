@@ -1,10 +1,7 @@
 import argparse
 import logging
 import os
-from dotenv import load_dotenv
 import redis
-
-load_dotenv()
 
 from src.objects import CliMessage
 
@@ -52,13 +49,5 @@ def cli_process(r):
 
 
 if __name__ == '__main__':
-    if os.getenv('ENV') == 'staging':
-        logger.info("Starting CLI process in staging mode")
-        r = redis.Redis(host=os.getenv('REDIS_HOST_STAGING'))
-    elif os.getenv('ENV') == 'production':
-        logger.info("Starting CLI process in production mode")
-        r = redis.Redis(host=os.getenv('REDIS_HOST_PRODUCTION'))
-    else:
-        logger.error("Please set ENV to production or staging, aborting order dispatcher")
-        exit(1)
+    r = redis.Redis(host=os.getenv('REDIS_HOST'))
     cli_process(r)

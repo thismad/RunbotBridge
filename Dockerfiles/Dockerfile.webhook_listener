@@ -13,9 +13,7 @@ RUN apt-get update && \
 
 # Copy the source code into the container
 COPY src/ ./src
-COPY .env ./src
 
 ENV PYTHONPATH /app/src:$PYTHONPATH
-ENV ENV production
 
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "src.webhook_listener:app"]

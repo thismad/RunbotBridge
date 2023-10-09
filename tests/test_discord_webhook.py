@@ -2,8 +2,6 @@ import os
 import unittest
 from discord_webhook import send_discord_webhook_embed
 from objects import WebhookMessage
-from dotenv import load_dotenv
-load_dotenv()
 class TestDiscordWebhook(unittest.TestCase):
     def test_send_discord_webhook_open_short(self):
         webhook_open_long = WebhookMessage({

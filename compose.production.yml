@@ -2,31 +2,36 @@ services:
   webhook_listener:
     build:
       context: .
-      dockerfile: Dockerfiles/Dockerfile.webhook_listener.production
+      dockerfile: Dockerfiles/Dockerfile.webhook_listener
     restart: always
     ports:
       - "8000:8000"
     depends_on:
       - redis
+    env_file:
+      - .production.env
 
   order_dispatcher:
     build:
       context: .
-      dockerfile: Dockerfiles/Dockerfile.order_dispatcher.production
+      dockerfile: Dockerfiles/Dockerfile.order_dispatcher
     restart: always
     depends_on:
       - redis
+    env_file:
+      - .production.env
 
   cli:
     build:
       context: .
-      dockerfile: Dockerfiles/Dockerfile.cli_process.production
+      dockerfile: Dockerfiles/Dockerfile.cli_process
     restart: always
     stdin_open: true
     tty: true
-
     depends_on:
       - redis
+    env_file:
+      - .production.env
 
 
   redis:

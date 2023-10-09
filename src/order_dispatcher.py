@@ -5,14 +5,12 @@ import time
 
 import redis
 import requests
-from dotenv import load_dotenv
 from discord_webhook import send_discord_webhook_embed
 import consts as c
 import exceptions
 from objects import CliMessage, Message
 import utils
 
-load_dotenv()
 
 log_format = "%(asctime)s - %(levelname)s - %(message)s"
 logging.basicConfig(level=logging.DEBUG, format=log_format)
@@ -367,7 +365,7 @@ class BitgetClient():
                 logger.error(f"Unknown position type: {position_type}")
 
             if success or order:
-                send_discord_webhook_embed(os.getenv('TBF_WEBHOOK_URL_STAGING'), message.content['price'],
+                send_discord_webhook_embed(os.getenv('TBF_WEBHOOK_URL'), message.content['price'],
                                            message.content['market'], message.content['tradeDirection'],
                                            message.content['positionType'], message.content['t'])
 
@@ -377,19 +375,7 @@ class BitgetClient():
 
 
 if __name__ == '__main__':
-    env = os.getenv('ENV')
-    if env == 'production':
-        client = BitgetClient(os.getenv('API_KEY_PRODUCTION'), os.getenv('API_SECRET_PRODUCTION'),
-                              os.getenv('PASSPHRASE_PRODUCTION'))
-        r = redis.Redis(host=os.getenv('REDIS_HOST_PRODUCTION'))
-        logger.info("Starting order dispatcher in production mode")
-        client.start(r)
-    elif env == 'staging':
-        client = BitgetClient(os.getenv('API_KEY_STAGING'), os.getenv('API_SECRET_STAGING'),
-                              os.getenv('PASSPHRASE_STAGING'))
-        r = redis.Redis(host=os.getenv('REDIS_HOST_STAGING'))
-        logger.info("Starting order dispatcher in staging mode")
-        client.start(r)
-    else:
-        logger.error("Please set ENV to production or staging, aborting order dispatcher")
-        exit(1)
+    client = BitgetClient(os.getenv('API_KEY'), os.getenv('API_SECRET'),
+                          os.getenv('PASSPHRASE'))
+    r = redis.Redis(host=os.getenv('REDIS_HOST'))
+    client.start(r)
