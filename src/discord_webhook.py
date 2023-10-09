@@ -14,8 +14,14 @@ def send_discord_webhook_embed(url, price: str, market: str, trade_direction: st
     :param embeds:
     :return:
     """
-    color = GREEN if trade_direction == "long" else RED
-    trade_direction = "long" if trade_direction == "short" else "short" if position_type == "close" else trade_direction
+    # If position close, trade_direction will be inverse of opening direction. But for display purpose, we want to display the opening direction.
+    if position_type == "close":
+        color = RED if trade_direction == "long" else GREEN
+        trade_direction = "long" if trade_direction == "short" else "short"
+    else:
+        color = GREEN if trade_direction == "long" else RED
+        # We keep same trade direction
+
     trade_embed = {"embeds": [{
         "color": color,
         "author": {
