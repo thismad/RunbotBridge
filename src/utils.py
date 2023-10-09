@@ -2,6 +2,9 @@ import base64
 import hmac
 import json
 import time
+import logging
+
+logger = logging.getLogger(__name__)
 
 from . import consts as c
 
@@ -91,6 +94,7 @@ def remove_orders_redis(r, key, values: list):
         r.set(key, json.dumps(orders))
     # If strategy id does not exist, do nothing
     else:
+        logger.error(f"Strategy id {key} does not exist, cannot remove orders")
         pass
 
 
