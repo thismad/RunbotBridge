@@ -66,7 +66,7 @@ def insert_order_redis(r, key, value):
     :return:
     """
     orders = r.get(key)
-    # If strategy id exists, append order to the list
+    # If strategy id exists (redis not returning None), append order to the list
     if orders:
         orders = json.loads(orders)
         orders.append(value)
