@@ -1,21 +1,21 @@
 import argparse
 import logging
-
+import os
 import redis
 
-from .objects import CliMessage
+from src.objects import CliMessage
 
 log_format = "%(asctime)s - %(levelname)s - %(message)s"
 logging.basicConfig(level=logging.DEBUG, format=log_format)
 logger = logging.getLogger(__name__)
 
 
-def cli_process():
+def cli_process(r):
     """
     CLI process to pause/resume the bridge, exiting all positions if stopped
     :return:
     """
-    r = redis.Redis(host='redis')
+
     parser = argparse.ArgumentParser(description='Key CLI manager for the bridge')
 
     # Define the arguments you expect
@@ -49,5 +49,5 @@ def cli_process():
 
 
 if __name__ == '__main__':
-    logger.info("Starting CLI")
-    cli_process()
+    r = redis.Redis(host=os.getenv('REDIS_HOST'))
+    cli_process(r)

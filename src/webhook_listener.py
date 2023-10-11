@@ -1,16 +1,15 @@
 import logging
-
 import redis
 from flask import Flask, request
-
+import os
 from src.objects import WebhookMessage
 
 log_format = "%(asctime)s - %(levelname)s - %(message)s"
 logging.basicConfig(level=logging.DEBUG, format=log_format)
 logger = logging.getLogger(__name__)
 
+r = redis.Redis(host=os.getenv('REDIS_HOST'))
 app = Flask(__name__)
-r = redis.Redis(host='redis')
 
 
 @app.route('/runbot', methods=['POST'])
@@ -24,5 +23,4 @@ def receive_webhook():
 
 
 if __name__ == '__main__':
-    logger.info("Starting webhook listener")
     app.run(host='0.0.0.0', port=5000, debug=True)

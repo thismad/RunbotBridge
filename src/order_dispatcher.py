@@ -5,14 +5,12 @@ import time
 
 import redis
 import requests
-from dotenv import load_dotenv
+from discord_webhook import send_discord_webhook_embed
+import consts as c
+import exceptions
+from objects import CliMessage, Message
+import utils
 
-from . import consts as c
-from . import utils, exceptions
-from .objects import CliMessage, Message
-from .utils import insert_order_redis, remove_orders_redis
-
-load_dotenv()
 
 log_format = "%(asctime)s - %(levelname)s - %(message)s"
 logging.basicConfig(level=logging.DEBUG, format=log_format)
@@ -44,6 +42,7 @@ class BitgetClient():
         :param func:
         :return:
         """
+
         def wrapper(*args, **kwargs):
             for i in range(2):
                 try:
@@ -78,7 +77,7 @@ class BitgetClient():
         return wrapper
 
     @_retry
-    def _request(self, method:str, request_path:str, params=None, cursor=False):
+    def _request(self, method: str, request_path: str, params=None, cursor=False):
         """
         Make a request to the Bitget API
         :param method: str : HTTP method (POST - GET)
@@ -226,6 +225,7 @@ class BitgetClient():
         params['productType'] = product_type
         params['pageNo'] = 1
         params['pageSize'] = 50
+        #TODO Might have to iterate on it if we have nore than 50 pos
         resp = self._request(c.GET, c.MIX_TRACE_V1_URL + '/currentTrack', params)
         if resp:
             # List of all open positions
@@ -267,7 +267,7 @@ class BitgetClient():
                         return False
         return True
 
-    def start(self):
+    def start(self, r):
         """
         Start the order dispatcher
         :return:
@@ -292,10 +292,17 @@ class BitgetClient():
                     running = False
                     logger.info("Pausing order dispatcher")
                 elif message.command == CliMessage.CliCommand.EXIT:
+                    success = False
                     for pair in activated_pairs:
-                        self.close_positions_copy_trading(self.BITGET_PAIRS[pair])
-                    running = False
-                    logger.info("Exiting order dispatcher")
+                        success = self.close_positions_copy_trading(self.BITGET_PAIRS[pair])
+                    if success:
+                        running = False
+                        # Clear redis database from all the orders
+                        r.flushdb()
+                        logger.info("All positions closed, exiting order dispatcher")
+                    else:
+                        logger.error("Failed to close all positions, not exiting order dispatcher")
+
             else:
                 if running:
                     self.order_logic(r, message, activated_pairs)
@@ -312,6 +319,8 @@ class BitgetClient():
         """
 
         symbol = message.content['market']
+        success = False
+        order = None
 
         if symbol in activated_pairs:
             position_id = message.content['positionId']
@@ -328,7 +337,7 @@ class BitgetClient():
                 order = self.place_orders(symbol, margin_coin, size, side, order_type)
                 if order:
                     order_id = order['orderId']
-                    insert_order_redis(r, position_id, order_id)
+                    utils.insert_order_redis(r, position_id, order_id)
 
             elif position_type == 'decrease':
                 logger.info("Received decrease order, passing order")
@@ -339,7 +348,7 @@ class BitgetClient():
                 order = self.place_orders(symbol, margin_coin, size, side, order_type)
                 if order:
                     order_id = order['orderId']
-                    insert_order_redis(r, position_id, order_id)
+                    utils.insert_order_redis(r, position_id, order_id)
 
             elif position_type == 'close':
                 logger.info("Received close order, passing order")
@@ -354,14 +363,23 @@ class BitgetClient():
                     success = self.close_positions_copy_trading(symbol, orders_id)
                     if success:
                         # Remove all closed orders from redis
-                        remove_orders_redis(r, position_id, orders_id)
+                        utils.remove_orders_redis(r, position_id, orders_id)
+            else:
+                logger.error(f"Unknown position type: {position_type}")
+
+            if success or order:
+                send_discord_webhook_embed(os.getenv('TBF_WEBHOOK_URL'), message.content['price'],
+                                           message.content['market'], message.content['tradeDirection'],
+                                           message.content['positionType'], message.content['t'])
+
         else:
             logger.info(f"Received order for {symbol} but not activated, not passing order")
-
         pass
 
 
 if __name__ == '__main__':
-    client = BitgetClient(os.getenv('API_KEY_PRODUCTION'), os.getenv('API_SECRET_PRODUCTION'), os.getenv('PASSPHRASE_PRODUCTION'))
-    logger.info("Starting order dispatcher")
-    client.start()
+    client = BitgetClient(os.getenv('API_KEY'), os.getenv('API_SECRET'),
+                          os.getenv('PASSPHRASE'))
+    r = redis.Redis(host=os.getenv('REDIS_HOST'))
+    client.start(r)
+

@@ -11,7 +11,7 @@ RUN apt-get update && \
 
 run pip install -r requirements.txt
 COPY src/ ./src
-COPY .env ./src
 COPY settings.json .
+ENV PYTHONPATH /app/src:$PYTHONPATH
 
-CMD ["python", "-m", "src.order_dispatcher"]
+CMD ["python","src/order_dispatcher.py"]

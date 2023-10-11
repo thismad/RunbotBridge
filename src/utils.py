@@ -6,7 +6,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-from . import consts as c
+import consts as c
 
 
 def sign(message, secret_key):
@@ -77,11 +77,11 @@ def insert_order_redis(r, key, value):
         r.set(key, json.dumps(orders))
 
 
-def remove_orders_redis(r, key, values: list):
+def remove_orders_redis(r, key=None, values: list=None):
     """
     Remove an order from the list of orders for a position id AKA a strategy id
     :param r: redis.Redis : Redis connection object
-    :param key: str : key
+    :param key: str : Position id
     :param value: list : values to remove
     :return:
     """
@@ -96,6 +96,8 @@ def remove_orders_redis(r, key, values: list):
     else:
         logger.error(f"Strategy id {key} does not exist, cannot remove orders")
         pass
+
+
 
 
 def get_timestamp():
