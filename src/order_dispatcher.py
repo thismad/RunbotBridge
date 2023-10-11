@@ -219,6 +219,7 @@ class BitgetClient():
         :param product_type: contract type
         :return: bool : True if all positions are closed, False if not
         """
+        logger.info(f"Closing positions for {symbol} with orders id : {orders_id}")
         params = {}
         params['symbol'] = symbol
         params['productType'] = product_type
@@ -348,13 +349,15 @@ class BitgetClient():
                 if order:
                     order_id = order['orderId']
                     utils.insert_order_redis(r, position_id, order_id)
+
             elif position_type == 'close':
                 logger.info("Received close order, passing order")
                 # Try to get orders id from redis, possibility that there is no orders id if we have a close order and bot didnt receive an open order before
                 try:
                     orders_id = json.loads(r.get(position_id))
-                    # If there are no corresponding order id, it means that the bot didnt open any trade anyway
+                    # If there are no corresponding order id, it means that the bot didnt open any trade anyway, r.get returns None
                 except TypeError:
+                    logger.error(f'No corresponding orders for strategy id: {position_id}, could not pass the close order')
                     pass
                 else:
                     success = self.close_positions_copy_trading(symbol, orders_id)
@@ -379,3 +382,4 @@ if __name__ == '__main__':
                           os.getenv('PASSPHRASE'))
     r = redis.Redis(host=os.getenv('REDIS_HOST'))
     client.start(r)
+

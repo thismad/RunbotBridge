@@ -2,6 +2,9 @@ import base64
 import hmac
 import json
 import time
+import logging
+
+logger = logging.getLogger(__name__)
 
 import consts as c
 
@@ -63,7 +66,7 @@ def insert_order_redis(r, key, value):
     :return:
     """
     orders = r.get(key)
-    # If strategy id exists, append order to the list
+    # If strategy id exists (redis not returning None), append order to the list
     if orders:
         orders = json.loads(orders)
         orders.append(value)
@@ -91,6 +94,7 @@ def remove_orders_redis(r, key=None, values: list=None):
         r.set(key, json.dumps(orders))
     # If strategy id does not exist, do nothing
     else:
+        logger.error(f"Strategy id {key} does not exist, cannot remove orders")
         pass
 
 
