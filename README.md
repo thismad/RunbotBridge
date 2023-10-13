@@ -37,6 +37,7 @@ You can fetch max 1GB of log per container.
 docker compose -p runbot-bridge-STAGE logs 
 ```
 Or if you want to analyze it from your local and download it as a file in your Downloads folder, use the custom script.
+Automatically open VSCODE as well.
 ```bash
 fetch_logs -p runbot-bridge-STAGE -h SERVER_SSH_NAME
 ```
