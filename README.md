@@ -30,6 +30,7 @@ docker-compose -f compose.staging.yml -p runbot-bridge-staging up -d
 ```
 Go on Runbot, use the staging bot to test live.
 
+
 ## Logging
 Logging is done via stdout and stderr from docker containers.
 You can fetch max 1GB of log per container.
@@ -41,4 +42,5 @@ Automatically open VSCODE as well.
 ```bash
 fetch_logs -p runbot-bridge-STAGE -h SERVER_SSH_NAME
 ```
+
 
