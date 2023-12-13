@@ -289,7 +289,7 @@ class MockTestOrderDispatch(unittest.TestCase):
 
     @patch('redis.Redis', autospec=True)
     @patch('src.order_dispatcher.BitgetClient.place_orders')
-    def test_order_logic_increase_shprt(self, mock_place_orders, redis_mock):
+    def test_order_logic_increase_short(self, mock_place_orders, redis_mock):
         # Init
         queue_data = []
         store_data = {}
@@ -320,7 +320,7 @@ class MockTestOrderDispatch(unittest.TestCase):
 
         bitget_client.order_logic(r_mock, webhook_open_long, activated_pairs=activated_pairs)
 
-        # Place second long thus increasing position
+        # Place a second short thus increasing short
         order_id_2 = "14193209139"
         activated_pairs = ['BTCUSDT', 'ETHUSDT']
         mock_place_orders.return_value = {
@@ -358,10 +358,13 @@ class MockTestOrderDispatch(unittest.TestCase):
         # Place first long
         order_id = "14193209138"
         activated_pairs = ['BTCUSDT', 'ETHUSDT']
+
+        # We mock a successfuly returned long order
         mock_place_orders.return_value = {
             "orderId": order_id,
             "clientOid": "BITGET#1627293504612"
         }
+
         webhook_open_long = WebhookMessage({
             "exchange": "Binance",
             "market": "BTCUSDT",
@@ -377,7 +380,7 @@ class MockTestOrderDispatch(unittest.TestCase):
         r_mock.rpush(webhook_open_long.serialize_message())
 
         bitget_client.order_logic(r_mock, webhook_open_long, activated_pairs=activated_pairs)
-        mock_place_orders.assert_called_with('BTCUSDT_UMCBL', 'USDT', self.size, 'open_long', 'market')
+        mock_place_orders.assert_called_with('BTCUSDT_UMCBL', 'USDT', self.size, 'open_short', 'market')
         assert json.loads(r_mock.get('1')) == [order_id]
 
     @patch('redis.Redis', autospec=True)
@@ -390,7 +393,7 @@ class MockTestOrderDispatch(unittest.TestCase):
         r_mock = self.mock_redis_queue(queue_data, store_data)
         redis_mock.return_value = r_mock
 
-        # Place first long
+        # We mock a successfuly returned long order
         order_id = "14193209138"
         activated_pairs = ['BTCUSDT', 'ETHUSDT']
         mock_place_orders.return_value = {
@@ -412,7 +415,7 @@ class MockTestOrderDispatch(unittest.TestCase):
         r_mock.rpush(webhook_open_long.serialize_message())
 
         bitget_client.order_logic(r_mock, webhook_open_long, activated_pairs=activated_pairs)
-        mock_place_orders.assert_called_with('BTCUSDT_UMCBL', 'USDT', self.size, 'open_short', 'market')
+        mock_place_orders.assert_called_with('BTCUSDT_UMCBL', 'USDT', self.size, 'open_long', 'market')
         assert json.loads(r_mock.get('1')) == [order_id]
 
     @patch('redis.Redis', autospec=True)

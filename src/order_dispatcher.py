@@ -343,9 +343,6 @@ class BitgetClient():
             elif position_type == 'decrease':
                 logger.info("Received decrease order, passing order")
                 # Inverse side for decrease order
-                side = self.BITGET_ORDERS['long'] if side == self.BITGET_ORDERS['short'] else \
-                    self.BITGET_ORDERS[
-                        'short']
                 order = self.place_orders(symbol, margin_coin, size, side, order_type)
                 if order:
                     order_id = order['orderId']

@@ -45,7 +45,7 @@ def send_discord_webhook_embed(url, price: str, market: str, trade_direction: st
             },
             {
                 "name": "Price",
-                "value": f"{float(price):.1f}",
+                "value": f"{float(price):.3f}",
                 "inline": True
             }
         ],

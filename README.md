@@ -43,4 +43,8 @@ Automatically open VSCODE as well.
 fetch_logs -p runbot-bridge-STAGE -h SERVER_SSH_NAME
 ```
 
-
+## Useful infos
+### Trading minimums
+BTCUSDT : 0.01
+ETHUSDT : 0.1
+XRPUSDT : 300
