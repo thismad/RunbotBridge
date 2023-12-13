@@ -24,7 +24,7 @@ class BitgetClient():
     BITGET_PAIRS = {
         "BTCUSDT": "BTCUSDT_UMCBL",
         "ETHUSDT": "ETHUSDT_UMCBL",
-        "XRPUSDT": "XRPUSDT_UMCBL"
+        "XRP-USDT-SWAP": "XRPUSDT_UMCBL"
     }
     BITGET_ORDERS = {
         "long": "open_long",
